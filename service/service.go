@@ -7,7 +7,6 @@ import (
 	"github.com/prononciation2/stores"
 )
 
-// Add logger here
 type Service interface {
 	CreateCity(ctx context.Context, c models.City) (models.City, error)
 	GetCityByID(ctx context.Context, id string) (models.City, error)
@@ -16,6 +15,7 @@ type Service interface {
 	UpdateCity(ctx context.Context, c models.City) (models.City, error)
 }
 
+// Add logger here
 type CityService struct {
 	repository stores.CityRepo
 }

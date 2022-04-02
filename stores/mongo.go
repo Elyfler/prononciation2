@@ -18,7 +18,7 @@ type MongoCityRepository struct {
 }
 
 type mongoCity struct {
-	ID            primitive.ObjectID `bson:"_id,omitempty`
+	ID            primitive.ObjectID `bson:"_id,omitempty"`
 	Name          string             `bson:"name"`
 	PostCode      string             `bson:"post_code"`
 	Prononciation string             `bson:"prononciation"`
