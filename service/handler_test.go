@@ -9,17 +9,20 @@ import (
 	"github.com/prononciation2/stores"
 )
 
-func TestGetCities(t *testing.T) {
+func setupTestServer() Server {
 	router := gin.Default()
 	db, _ := stores.NewMongoDB("test")
+	return NewServer(router, db)
+}
+
+func TestTest(t *testing.T) {
+
+	s := setupTestServer()
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/test", nil)
-	s := NewServer(router, db)
-
 	s.Router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
 		t.Error("Did not work")
 	}
-
 }
