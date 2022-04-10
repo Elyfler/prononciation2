@@ -17,8 +17,8 @@ type Config struct {
 func Start(cfg *Config) {
 	router := gin.New()
 
-	Activate(router)
-	if err := router.Run(fmt.Sprintf("%s:%d", cfg.SvcHost, cfg.SvcPort)); err != nil {
+	s := NewServer(router)
+	if err := s.Router.Run(fmt.Sprintf("%s:%d", cfg.SvcHost, cfg.SvcPort)); err != nil {
 		log.Fatal(context.Background(), err.Error())
 	}
 }

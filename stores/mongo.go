@@ -50,7 +50,13 @@ func (mc *mongoCity) toCity() models.City {
 // Probablement passer une db en paramètre de NewMongoCityRepo pour pallier ce souci
 // NewMongoCityRepo ...
 func NewMongoCityRepo() *MongoCityRepository {
-	uri := os.Getenv("MONGO_URI")
+	var uri string
+	_, mongoExists := os.LookupEnv("MONGO_URI")
+	if mongoExists {
+		uri = os.Getenv("MONGO_URI")
+	} else {
+		uri = "mongodb://127.0.0.1:27017"
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
