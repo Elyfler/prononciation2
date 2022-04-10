@@ -46,10 +46,7 @@ func (mc *mongoCity) toCity() models.City {
 	}
 }
 
-// Gros doute sur une utilisation avec plusieurs repo qui essaient de taper la DB en même temps
-// Probablement passer une db en paramètre de NewMongoCityRepo pour pallier ce souci
-// NewMongoCityRepo ...
-func NewMongoCityRepo() *MongoCityRepository {
+func NewMongoDB(dbName string) *mongo.Database {
 	var uri string
 	_, mongoExists := os.LookupEnv("MONGO_URI")
 	if mongoExists {
@@ -64,8 +61,14 @@ func NewMongoCityRepo() *MongoCityRepository {
 	if err != nil {
 		log.Fatal(err)
 	}
+	db := client.Database(dbName)
+	return db
+}
 
-	db := client.Database("prononciation")
+// Gros doute sur une utilisation avec plusieurs repo qui essaient de taper la DB en même temps
+// Probablement passer une db en paramètre de NewMongoCityRepo pour pallier ce souci
+// NewMongoCityRepo ...
+func NewMongoCityRepo(db *mongo.Database) *MongoCityRepository {
 	return &MongoCityRepository{Cities: db.Collection("cities")}
 }
 

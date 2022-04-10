@@ -6,14 +6,15 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/prononciation2/stores"
 )
 
 func TestGetCities(t *testing.T) {
 	router := gin.Default()
-
+	db := stores.NewMongoDB("test")
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/test", nil)
-	s := NewServer(router)
+	s := NewServer(router, db)
 
 	s.Router.ServeHTTP(w, req)
 

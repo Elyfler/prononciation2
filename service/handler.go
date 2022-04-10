@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prononciation2/models"
 	"github.com/prononciation2/stores"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Server struct {
@@ -14,8 +15,8 @@ type Server struct {
 }
 
 // NewServer Here I should add a db as param
-func NewServer(router *gin.Engine) Server {
-	cityService := NewService(stores.NewMongoCityRepo())
+func NewServer(router *gin.Engine, db *mongo.Database) Server {
+	cityService := NewService(stores.NewMongoCityRepo(db))
 	s := Server{
 		CityService: cityService,
 		Router:      router,
