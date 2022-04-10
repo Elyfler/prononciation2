@@ -11,7 +11,7 @@ import (
 
 func TestGetCities(t *testing.T) {
 	router := gin.Default()
-	db := stores.NewMongoDB("test")
+	db, _ := stores.NewMongoDB("test")
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/test", nil)
 	s := NewServer(router, db)

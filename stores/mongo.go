@@ -46,7 +46,7 @@ func (mc *mongoCity) toCity() models.City {
 	}
 }
 
-func NewMongoDB(dbName string) *mongo.Database {
+func NewMongoDB(dbName string) (*mongo.Database, error) {
 	var uri string
 	_, mongoExists := os.LookupEnv("MONGO_URI")
 	if mongoExists {
@@ -59,10 +59,11 @@ func NewMongoDB(dbName string) *mongo.Database {
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		return nil, err
 	}
 	db := client.Database(dbName)
-	return db
+	return db, nil
 }
 
 // Gros doute sur une utilisation avec plusieurs repo qui essaient de taper la DB en même temps
@@ -91,7 +92,7 @@ func (r MongoCityRepository) GetCityByID(ctx context.Context, id string) (models
 	if err != nil {
 		return models.City{}, err
 	}
-	filter := bson.D{{"_id", objectID}}
+	filter := bson.M{"_id": objectID}
 	err = r.Cities.FindOne(ctx, filter).Decode(&mongoCity)
 	if err != nil {
 		return models.City{}, err
@@ -122,7 +123,7 @@ func (r MongoCityRepository) DeleteCity(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	filter := bson.D{{"_id", objectID}}
+	filter := bson.M{"_id": objectID}
 
 	_, err = r.Cities.DeleteOne(ctx, filter)
 	if err != nil {
@@ -136,7 +137,7 @@ func (r MongoCityRepository) UpdateCity(ctx context.Context, c models.City) (mod
 	if err != nil {
 		return models.City{}, err
 	}
-	filter := bson.D{{"_id", mongoCity.ID}}
+	filter := bson.M{"_id": mongoCity.ID}
 
 	res, err := r.Cities.UpdateOne(ctx, filter, &mongoCity)
 	if err != nil {
