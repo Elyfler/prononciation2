@@ -6,13 +6,15 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/prononciation2/logger"
 	"github.com/prononciation2/stores"
 )
 
 func setupTestServer() Server {
 	router := gin.Default()
 	db, _ := stores.NewMongoDB("test")
-	return NewServer(router, db)
+	logger := logger.NewLogger()
+	return NewServer(router, db, logger)
 }
 
 func TestTest(t *testing.T) {

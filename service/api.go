@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/prononciation2/logger"
 	"github.com/prononciation2/stores"
 )
 
@@ -22,7 +23,8 @@ func Start(cfg *Config) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := NewServer(router, db)
+	logger := logger.NewLogger()
+	s := NewServer(router, db, logger)
 	if err := s.Router.Run(fmt.Sprintf("%s:%d", cfg.SvcHost, cfg.SvcPort)); err != nil {
 		log.Fatal(context.Background(), err.Error())
 	}

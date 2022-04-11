@@ -15,7 +15,6 @@ type Service interface {
 	UpdateCity(ctx context.Context, c models.City) (models.City, error)
 }
 
-// Add logger here
 type CityService struct {
 	repository stores.CityRepo
 }

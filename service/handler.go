@@ -7,19 +7,22 @@ import (
 	"github.com/prononciation2/models"
 	"github.com/prononciation2/stores"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.uber.org/zap"
 )
 
 type Server struct {
 	CityService Service
 	Router      *gin.Engine
+	Logger      *zap.SugaredLogger
 }
 
 // NewServer Here I should add a db as param
-func NewServer(router *gin.Engine, db *mongo.Database) Server {
+func NewServer(router *gin.Engine, db *mongo.Database, logger *zap.SugaredLogger) Server {
 	cityService := NewService(stores.NewMongoCityRepo(db))
 	s := Server{
 		CityService: cityService,
 		Router:      router,
+		Logger:      logger,
 	}
 	s.Router.GET("/cities/", s.GetCities)
 	s.Router.GET("/cities/:id", s.GetCityByID)
@@ -37,6 +40,7 @@ func NewServer(router *gin.Engine, db *mongo.Database) Server {
 func (s *Server) GetCities(c *gin.Context) {
 	cities, err := s.CityService.GetCities(c)
 	if err != nil {
+		s.Logger.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -47,6 +51,7 @@ func (s *Server) GetCities(c *gin.Context) {
 func (s *Server) GetCityByID(c *gin.Context) {
 	city, err := s.CityService.GetCityByID(c, c.Param("id"))
 	if err != nil {
+		s.Logger.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -55,13 +60,16 @@ func (s *Server) GetCityByID(c *gin.Context) {
 
 // CreateCity creates a city
 func (s *Server) CreateCity(c *gin.Context) {
+	s.Logger.Info(c.Request.URL.Path, zap.String("method", c.Request.Method))
 	var city models.City
 	if err := c.ShouldBindJSON(&city); err != nil {
+		s.Logger.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	city, err := s.CityService.CreateCity(c, city)
 	if err != nil {
+		s.Logger.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -72,6 +80,7 @@ func (s *Server) CreateCity(c *gin.Context) {
 func (s *Server) DeleteCity(c *gin.Context) {
 	err := s.CityService.DeleteCity(c, c.Param("id"))
 	if err != nil {
+		s.Logger.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -82,11 +91,13 @@ func (s *Server) DeleteCity(c *gin.Context) {
 func (s *Server) UpdateCity(c *gin.Context) {
 	var city models.City
 	if err := c.ShouldBindJSON(&city); err != nil {
+		s.Logger.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	city, err := s.CityService.UpdateCity(c, city)
 	if err != nil {
+		s.Logger.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
